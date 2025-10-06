@@ -1,0 +1,86 @@
+<div class="register-page page-shadow">
+    <div class="register-box">
+        <div class="register-logo-box">
+            <a class="logo-link" href="javascript: void(0);">
+                <img src="/images/Logo.png" alt="ogo" loading="lazy">
+            </a>
+        </div>
+        <div class="row">
+            <div class="col-lg-12 register-box-title text-center">
+                <h2>Создайте аккаунт</h2>
+            </div>
+        </div>
+        <div class="row form-row">
+            <div class="col-lg-12">
+                <form id="form" class="was-validated" novalidate>
+                    <!-- Name -->
+                    <div class="input-group mb-3">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-user"></span>
+                            </div>
+                        </div>
+                        <input type="text" class="form-control" name="name" placeholder="Имя" required>
+                        <span class="error invalid-feedback"></span>
+                    </div>
+                    <!-- Last Name -->
+                    <div class="input-group mb-3">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-user"></span>
+                            </div>
+                        </div>
+                        <input type="text" class="form-control" name="lastname" placeholder="Фамилия" required>
+                        <span class="error invalid-feedback"></span>
+                    </div>
+                    <!-- Email -->
+                    <div class="input-group mb-3 has-validation">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-envelope-open"></span>
+                            </div>
+                        </div>
+                        <input type="email" class="form-control" name="email" placeholder="Электронная почта" required>
+                        <span class="error invalid-feedback"></span>
+                    </div>
+                    <!-- Password -->
+                    <div class="input-group mb-3">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-lock"></span>
+                            </div>
+                        </div>
+                        <input type="password" class="form-control" name="password" placeholder="Пароль" required>
+                        <span class="error invalid-feedback"></span>
+                    </div>
+                    <!-- Repeat Password -->
+                    <div class="input-group mb-3">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-lock"></span>
+                            </div>
+                        </div>
+                        <input type="password" class="form-control" name="reppassword" placeholder="Подтверждение пароля" required>
+                        <span class="error invalid-feedback"></span>
+                    </div>
+                    <!-- Button sign-in -->
+                    <div class="row">
+                        <div class="col-12">
+                            <!-- Button -->
+                            <button type="submit" class="btn btn-primary btn-block">Войти</button>
+                            <span class="error invalid-feedback"></span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-lg-12">
+                <div class="d-flex flex-row justify-content-center account-box">
+                    <span>Уже есть аккаунт?</span>
+                    <a href="/login">Войдите в систему</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

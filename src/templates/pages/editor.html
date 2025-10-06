@@ -1,0 +1,105 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Общая информация</h3>
+
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- Type -->
+                <div class="form-group row">
+                    <label for="inputType" class="col-md-4 col-form-label">Укажите тип</label>
+                    <div class="col-md-8">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-asterisk"></i></span>
+                            </div>
+                            <select id="inputType" class="form-control editor-control custom-select" aria-labelledby="type-label" role="listbox" required>
+                                <option selected disabled>Тип</option>
+                                <option value="income">Доходы</option>
+                                <option value="expense">Расходы</option>
+                            </select>
+                            <span class="warning-feedback">Выберите тип</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Category -->
+                <div class="form-group row">
+                    <label for="inputCategory" class="col-md-4 col-form-label">Укажите категорию</label>
+                    <div class="col-md-8">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-tag"></i></span>
+                            </div>
+                            <select id="inputCategory" class="form-control editor-control custom-select" aria-labelledby="category-label" role="listbox">
+                                <option selected disabled>Категория</option>
+                            </select>
+                            <span class="warning-feedback">Выберите категорию</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Amount -->
+                <div class="form-group row">
+                    <label for="inputAmount" class="col-md-4 col-form-label">Укажите сумму</label>
+                    <div class="col-md-8">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
+                            </div>
+                            <input type="number" id="inputAmount" class="form-control editor-control" min="1" placeholder="Сумма" required>
+                            <span class="warning-feedback">Заполните поле</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Date -->
+                <div class="form-group row">
+                    <label for="inpDate" class="col-md-4 col-form-label">Укажите дату</label>
+                    <div class="col-md-8">
+<!--                        <div class="input-group">-->
+<!--                            <div class="input-group-prepend" data-toggle="datetimepicker">-->
+<!--                                <span class="input-group-text"><i class="fas fa-calendar"></i></span>-->
+<!--                            </div>-->
+<!--                            <input type="text" id="inputDate" class="form-control editor-control" name="datetimepicker" required>-->
+<!--                        </div>-->
+
+                        <div class="input-group date" id="inputDate" data-target-input="nearest">
+                            <div class="input-group-append" data-target="#inputDate" data-toggle="datetimepicker">
+                                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                            </div>
+                            <input type="text" id="inpDate" class="form-control editor-control datetimepicker-input" placeholder="Дата" data-target="#inputDate"/>
+                            <span class="warning-feedback">Кликните на иконку</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Comment -->
+                <div class="form-group row">
+                    <label for="inputInfo" class="col-md-4 col-form-label">Оставьте комментарий</label>
+                    <div class="col-md-8">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-pen-fancy"></i></span>
+                            </div>
+                            <textarea id="inputInfo" class="form-control editor-control" rows="2" placeholder="Комментарий" required></textarea>
+                            <span class="warning-feedback">Заполните комментарий</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Buttons -->
+                <div class="form-group row">
+                    <div class="col-md-12 editor-group-buttons">
+                        <a href="" class="btn-editor-cancel btn_1 btn-danger">Отмена</a>
+                        <button type="button" class="btn-editor-save btn_1 btn-success float-right">Создать</button>
+                    </div>
+                </div>
+                <div class="form-group"></div>
+            </div>
+            <!-- /.card-body -->
+        </div>
+        <!-- /.card -->
+    </div>
+</div>

@@ -1,0 +1,16 @@
+export default {
+    host: process.env.HOST,
+    headerName: "x-auth-token",
+    login: process.env.HOST + "/api/login",
+    logout: process.env.HOST + "/api/logout",
+    signup: process.env.HOST + "/api/signup",
+    refresh: process.env.HOST + "/api/refresh",
+    getBalance: process.env.HOST + "/api/balance",
+    getIncomeCategories: process.env.HOST + "/api/categories/income",
+    getExpenseCategories: process.env.HOST + "/api/categories/expense",
+    createCategoryIncome: process.env.HOST + "/api/categories/income",
+    createCategoryExpense: process.env.HOST + "/api/categories/expense",
+    createOperation: process.env.HOST + "/api/operations",
+    getOperations: process.env.HOST + "/api/operations",
+    deleteOperation: process.env.HOST + "/api/operations",
+}

@@ -620,12 +620,12 @@ export class Router {
         if (e.target.nodeName === 'A') {
             targetLink = e.target;
         }
+        else if (e.target.parentElement.nodeName === 'A') {
+            targetLink = e.target.parentElement;
+        }
         else if (e.target.nodeName === 'I') {
             targetLink = e.target.dataset.target;
             path = e.target.dataset.target;
-        }
-        else if (e.target.parentElement.nodeName === 'A') {
-            targetLink = e.target.parentElement;
         }
         if (targetLink !== null) {
 

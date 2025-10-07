@@ -15,6 +15,7 @@ const DASHBOARD_BALANCE_SELECTOR = ".balance-info";
 const DASHBOARD_INCOME_SELECTOR = "incomeChart";
 const DASHBOARD_EXPENSES_SELECTOR = "expensesChart";
 const DASHBOARD_FILTER_SELECTOR = ".main-filter";
+const DASHBOARD_BACK_TO_TOP = ".back-top";
 
 export class Dashboard {
     static balance = null;
@@ -58,6 +59,8 @@ export class Dashboard {
 
         this._incomeCtx = null;
         this._expensesCtx = null;
+
+        window.addEventListener("scroll", this.#setScrollObserver.bind(this));
 
         this.#setAdminName();
         this.#setActiveDashboard();
@@ -133,8 +136,11 @@ export class Dashboard {
     }
 
     #setupBalance(balance) {
-        Dashboard.balance = balance.balance;
-        this.balanceEl.textContent = balance.balance + "$";
+
+        if (balance !== null) {
+            Dashboard.balance = balance.balance;
+            this.balanceEl.textContent = balance.balance + "$";
+        }
     }
 
     #dashboardMain() {
@@ -338,6 +344,16 @@ export class Dashboard {
 
             this.#setupBalance(response);
         });
+    }
+
+    #setScrollObserver(e) {
+
+        let scroll = $(window).scrollTop();
+        if (scroll < 400) {
+            $(DASHBOARD_BACK_TO_TOP).fadeOut(500);
+        } else {
+            $(DASHBOARD_BACK_TO_TOP).fadeIn(500);
+        }
     }
 
     toggleState() {

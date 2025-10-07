@@ -8474,6 +8474,45 @@ button.bg-dark:focus {
 .my-5 {
   margin-bottom: 3rem !important;
 }
+.mb-6 {
+    margin-bottom: 0.375rem;
+}
+.mb-8 {
+    margin-bottom: 0.5rem;
+}
+.mb-12 {
+    margin-bottom: 0.75rem;
+}
+.mb-16 {
+    margin-bottom: 1rem;
+}
+.mb-18 {
+    margin-bottom: 1.125rem;
+}
+.mb-20 {
+    margin-bottom: 1.25rem;
+}
+.mb-24 {
+    margin-bottom: 1.5rem;
+}
+.mb-28 {
+    margin-bottom: 1.75rem;
+}
+.mb-30 {
+    margin-bottom: 1.875rem;
+}
+.mb-32 {
+    margin-bottom: 2rem;
+}
+.mb-40 {
+    margin-bottom: 2.5rem;
+}
+.mb-48 {
+    margin-bottom: 3rem;
+}
+.mb-60 {
+    margin-bottom: 3.75rem;
+}
 
 .ml-5,
 .mx-5 {

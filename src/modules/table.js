@@ -79,15 +79,15 @@ export class Table extends Dashboard {
         let tdLast = document.createElement("td");
 
         let div = document.createElement("div");
-        div.classList.add("btn-toolbar", "table-tools", "align-items-sm-center");
+        div.classList.add("d-flex");
         div.role = "toolbar";
 
         let btnDelete = document.createElement("a");
-        btnDelete.className = "btn";
+        btnDelete.classList.add("action_btn", "mr-2");
         btnDelete.href = config.ROUTE_DELETE_OPERATION + "?id=" + operation.id;
 
         let iTrash = document.createElement("i");
-        iTrash.className = "ti-trash";
+        iTrash.classList.add("fas", "fa-trash");
         iTrash.dataset.target = config.ROUTE_DELETE_OPERATION + "?id=" + operation.id;
 
         btnDelete.appendChild(iTrash);
@@ -99,9 +99,10 @@ export class Table extends Dashboard {
         else {
             btnEdit.href = config.ROUTE_EDIT_EXPENSE + "?id=" + operation.id;
         }
+        btnEdit.className = "action_btn";
 
         let iPencil = document.createElement("i");
-        iPencil.className = "ti-pencil";
+        iPencil.classList.add("far", "fa-edit");
 
         btnEdit.appendChild(iPencil);
 

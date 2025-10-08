@@ -112,6 +112,19 @@ export class Editor extends Dashboard {
             this._formControles[3].value = this._editorData.date;
             this._formControles[4].value = this._editorData.comment;
 
+            let categories = this._selectCategory.children();
+
+            for (let category of categories) {
+                if (category.textContent === response.category) {
+                    category.selected = true;
+                    this._editorData.category_id = parseInt(category.value, 10);
+                    this._editorPreviouseData.category_id = this._editorData.category_id;
+                    this._selectCategory.val(category.value);
+                    this._selectCategory.trigger('change');
+                    break;
+                }
+            }
+
 
             this.#checkControlsValid();
         }
@@ -381,7 +394,8 @@ export class Editor extends Dashboard {
     #isDataChanged() {
         let result = false;
 
-        if (this._editorData.type !== this._editorPreviouseData.type || this._editorData.amount !== this._editorPreviouseData.amount || this._editorData.date !== this._editorPreviouseData.date || this._editorData.comment !== this._editorPreviouseData.comment ) {
+        if (this._editorData.type !== this._editorPreviouseData.type || this._editorData.amount !== this._editorPreviouseData.amount || this._editorData.date !== this._editorPreviouseData.date || this._editorData.comment !== this._editorPreviouseData.comment
+                || this._editorData.category_id !== this._editorPreviouseData.category_id) {
             result = true;
         }
 

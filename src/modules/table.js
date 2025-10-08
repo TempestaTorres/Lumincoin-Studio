@@ -16,21 +16,23 @@ export class Table extends Dashboard {
     }) {
         super(dashboardName, options);
 
-        this._tableBody = document.querySelector("tbody");
+        this._dataTable = null;
 
         Fsm.registerState(config.STATE_INCOME_EXPENSES, this.#commonTableMain.bind(this));
     }
 
     initialize() {
-        this.createFilter();
+        this.createFilter(this.#tableFilterHandler.bind(this));
+        this.initializePicker();
         this.#buttonsInit();
 
+        this.#tableInit();
         super.initialize();
     }
 
-    #commonTableMain() {
+    #commonTableMain(url = this.options.requestUrl) {
 
-        this.sendRequest(this.options.requestUrl).then((response) => {
+        this.sendRequest(url).then((response) => {
 
             if (Array.isArray(response) && response.length > 0) {
 
@@ -39,12 +41,23 @@ export class Table extends Dashboard {
                     this.#createTableRow(response[i], i + 1);
                 }
 
-                this.#tableInit();
             }
             else {
                 this.showMessageBoxEx("Данные отсутствуют. Создайте операции.", "bg-warning");
             }
         });
+    }
+
+    pickerHandler(e, picker) {
+
+        this.pickerUpdate(picker);
+
+        this._dataTable.clear().draw();
+
+        let url = this.options.requestUrl + this.filterOptions[5] + picker.startDate.format('YYYY-MM-DD') + "&dateTo=" + picker.endDate.format('YYYY-MM-DD');
+
+        this.#commonTableMain(url);
+
     }
 
     #createTableRow(operation, index) {
@@ -65,7 +78,7 @@ export class Table extends Dashboard {
         }
 
         let tdCategory = document.createElement("td");
-        tdCategory.textContent = "";//operation.categoryTitle;
+        tdCategory.textContent = operation.category;
 
         let tdAmount = document.createElement("td");
         tdAmount.textContent = operation.amount + "$";
@@ -118,8 +131,9 @@ export class Table extends Dashboard {
         tr.appendChild(tdComment);
         tr.appendChild(tdLast);
 
-        this._tableBody.appendChild(tr);
+        this._dataTable.row.add(tr).draw();
     }
+
     #buttonsInit() {
 
         let buttonsWrapper = document.querySelector(BUTTONS_WRAPPER_SELECTOR);
@@ -141,7 +155,8 @@ export class Table extends Dashboard {
     }
 
     #tableInit() {
-        $('#table-main').DataTable({
+
+        this._dataTable = $('#table-main').DataTable({
             bLengthChange: false,
             "bDestroy": false,
             language: {
@@ -161,4 +176,21 @@ export class Table extends Dashboard {
             paging: true,
         });
     }
+
+    #tableFilterHandler(e) {
+
+        if (this.isFilterButtonReady(e.target)) {
+
+            this._dataTable.clear().draw();
+
+            if (this.filterIndex === 0) {
+
+                this.#commonTableMain();
+            }
+            else {
+                this.#commonTableMain(this.options.requestUrl + this.filterOptions[this.filterIndex]);
+            }
+        }
+    }
+
 }

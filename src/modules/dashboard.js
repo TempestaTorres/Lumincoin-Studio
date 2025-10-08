@@ -28,6 +28,9 @@ export class Dashboard {
             requestUrl: null,
             message: '',
         }
+        this.filter = null;
+        this.filterOptions = ["","?period=week","?period=month","?period=year","?period=all","?period=interval&dateFrom="];
+        this.filterIndex = 0;
         this.filterLabels = [
                 "Сегодня",
                 "Неделя",
@@ -52,10 +55,10 @@ export class Dashboard {
         this.currentState = (this.options.state - this.options.defaultState);
         this.previousState = this.currentState;
         this.balanceEl = document.querySelector(DASHBOARD_BALANCE_SELECTOR);
-        this._filter = null;
-        this._dashboardDatePicker = null;
+        this.dashboardDatePicker = null;
         this._isDatePickerShowing = false;
         this.targetId = null;
+        this.triggerBtn = null;
 
         this._incomeCtx = null;
         this._expensesCtx = null;
@@ -82,6 +85,7 @@ export class Dashboard {
     initialize() {
         Fsm.callCurrentState(this.options.state);
     }
+
     #setAdminName() {
         let userInfo = document.querySelector(DASHBOARD_USER_NAME_SELECTOR);
         if (userInfo) {
@@ -145,15 +149,17 @@ export class Dashboard {
 
     #dashboardMain() {
 
-        this.createFilter();
+        this.createFilter(this.#dashboardFilterHandler.bind(this));
+        this.initializePicker();
+
         this._incomeCtx = document.getElementById(DASHBOARD_INCOME_SELECTOR).getContext("2d");
         this._expensesCtx = document.getElementById(DASHBOARD_EXPENSES_SELECTOR).getContext("2d");
         this.#setupCharts();
     }
 
-    createFilter() {
+    createFilter(callback) {
 
-        this._filter = document.querySelector(DASHBOARD_FILTER_SELECTOR);
+        this.filter = document.querySelector(DASHBOARD_FILTER_SELECTOR);
 
         for (let i = 0; i < this.filterLabels.length; i++) {
             let label = this.filterLabels[i];
@@ -161,12 +167,14 @@ export class Dashboard {
             button.type = "button";
             button.textContent = label;
             button.classList.add("btn", "btn-outline-secondary");
+            button.dataset.nodeIndex = `${i}`;
 
             if(i === 0) {
                 button.classList.add("active");
             }
 
-            this._filter.appendChild(button);
+            this.filter.appendChild(button);
+            button.addEventListener("click", callback);
         }
 
         let divInputGroup = document.createElement("div");
@@ -195,22 +203,8 @@ export class Dashboard {
         divInputGroup.appendChild(divPrepend);
         divInputGroup.appendChild(input);
 
-        this._filter.appendChild(divInputGroup);
-
-        this.initializePicker();
-    }
-
-    #rangeButton(e) {
-
-        let drp = $(this._dashboardDatePicker).data('daterangepicker');
-
-        if (this._isDatePickerShowing) {
-            drp.hide(e);
-            this._isDatePickerShowing = false;
-        } else {
-            drp.show(e);
-            this._isDatePickerShowing = true;
-        }
+        this.filter.appendChild(divInputGroup);
+        this.triggerBtn = document.querySelector(".btn-trigger");
     }
 
     initializePicker(name = 'input[name="datetimepicker"]', bSingle = false, autoUpdate = false) {
@@ -228,15 +222,76 @@ export class Dashboard {
             },
         }
 
-        this._dashboardDatePicker = $(name).daterangepicker(options);
-        this._dashboardDatePicker.on('apply.daterangepicker', this.pickerHandler.bind(this));
+        this.dashboardDatePicker = $(name).daterangepicker(options);
+        this.dashboardDatePicker.on('apply.daterangepicker', this.pickerHandler.bind(this));
     }
 
     pickerHandler(e, picker) {
 
-        console.log(picker.startDate.format('YYYY-MM-DD'));
+        this.pickerUpdate(picker);
 
     }
+
+    pickerUpdate(picker) {
+        this.#resetFilterActiveButton();
+        this.triggerBtn.classList.add("active");
+        this.filterIndex = -1;
+        $(this.dashboardDatePicker).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
+    }
+
+    #dashboardFilterHandler(e) {
+
+        if (this.isFilterButtonReady(e.target)) {
+            console.log("FILTER");
+        }
+    }
+
+    isFilterButtonReady(button) {
+
+        let result = false;
+        let btnIndex = parseInt(button.dataset.nodeIndex);
+
+        if (btnIndex !== this.filterIndex) {
+            this.filterIndex = btnIndex;
+            this.setFilterActiveButton();
+            $(this.dashboardDatePicker).val('');
+            return true;
+        }
+        return result;
+    }
+    setFilterActiveButton() {
+
+        this.#resetFilterActiveButton();
+        this.triggerBtn.classList.remove("active");
+
+        this.filter.children[this.filterIndex].classList.add("active");
+    }
+
+    #resetFilterActiveButton() {
+        for (let i = 0; i < this.filterLabels.length; i++) {
+            this.filter.children[i].classList.remove("active");
+        }
+    }
+
+    #rangeButton(e) {
+
+        this.#resetFilterActiveButton();
+        this.filterIndex = -1;
+
+        let drp = $(this.dashboardDatePicker).data('daterangepicker');
+
+        if (this._isDatePickerShowing) {
+            drp.hide(e);
+            this._isDatePickerShowing = false;
+            e.target.classList.toggle("active");
+
+        } else {
+            drp.show(e);
+            this._isDatePickerShowing = true;
+            e.target.classList.toggle("active");
+        }
+    }
+
     #setupCharts() {
 
         let chartData1        = {

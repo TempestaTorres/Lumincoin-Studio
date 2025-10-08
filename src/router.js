@@ -33,11 +33,8 @@ export class Router {
                 },
                 load: (message) => {
                     console.log('Login loaded');
+                    Framework.loadPlugins();
 
-                    if (!this._layoutLoaded) {
-                        Framework.loadPlugins();
-                        this._layoutLoaded = true;
-                    }
                     new FormValidation("#form", this.#loadRoute.bind(this));
                 },
                 unload: () => {
@@ -55,10 +52,7 @@ export class Router {
                 },
                 load: (message) => {
                     console.log('Signup loaded');
-                    if (!this._layoutLoaded) {
-                        Framework.loadPlugins();
-                        this._layoutLoaded = true;
-                    }
+                    Framework.loadPlugins();
 
                     new FormValidation("#form", this.#loadRoute.bind(this));
                 },

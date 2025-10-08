@@ -65,7 +65,7 @@ export class Table extends Dashboard {
         }
 
         let tdCategory = document.createElement("td");
-        tdCategory.textContent = "Fuck backend";
+        tdCategory.textContent = "";//operation.categoryTitle;
 
         let tdAmount = document.createElement("td");
         tdAmount.textContent = operation.amount + "$";

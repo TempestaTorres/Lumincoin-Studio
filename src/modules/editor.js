@@ -366,6 +366,7 @@ export class Editor extends Dashboard {
         if (method === "PUT") {
 
             if (this.#isDataChanged()) {
+                console.log(this._editorData);
                 this.dashboardPostRequestHandler(url, method, this._editorData, this.#responseOperationHandler.bind(this));
             }
             else {
@@ -389,7 +390,7 @@ export class Editor extends Dashboard {
 
     #responseOperationHandler(response) {
 
-        if (response.id) {
+        if (response !== null && response.id) {
             this.showMessageBox(this._messages[this._currentStateIndex] + ": " + response.date);
         }
         else {
@@ -429,7 +430,7 @@ export class Editor extends Dashboard {
 
     #responseHandler(response) {
 
-        if (response.id) {
+        if (response !== null && response.id) {
             this.showMessageBox(this._messages[this._currentStateIndex] + ": " + response.title);
         }
         else {
@@ -458,7 +459,7 @@ export class Editor extends Dashboard {
     }
 
     #select2SelectHandler(e) {
-        this._editorData.category_id = e.target.value;
+        this._editorData.category_id = parseInt(e.target.value);
         this.#checkControlsValid();
     }
 
@@ -469,7 +470,7 @@ export class Editor extends Dashboard {
                 this._editorData.title = e.target.value;
                 break;
             case EDITOR_AMOUNT_SELECTOR:
-                this._editorData.amount = e.target.value;
+                this._editorData.amount = parseInt(e.target.value);
                 break;
             case EDITOR_COMMENTS_SELECTOR:
                 this._editorData.comment = e.target.value;

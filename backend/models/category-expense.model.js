@@ -14,15 +14,16 @@ class CategoryExpenseModel {
         return categories.insert(data);
     }
 
-    static update(params, title) {
+    static update(params, title, color) {
         const category = categories(params);
         if (category) {
-            category.update({title: title});
+            category.update({title: title, color: color});
 
             const updatedCategory = category.first();
             return {
                 id: updatedCategory.id,
-                title: updatedCategory.title
+                title: updatedCategory.title,
+                color: updatedCategory.color,
             };
         }
         return null;

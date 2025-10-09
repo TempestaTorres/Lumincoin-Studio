@@ -4,7 +4,7 @@ const OperationModel = require('../models/operation.model');
 class CategoryExpenseController {
     static getCategories(req, res) {
         let categories = CategoryExpenseModel.findAll(req.body.user.id);
-        res.json(categories.map(item => ({id: item.id, title: item.title})));
+        res.json(categories.map(item => ({id: item.id, title: item.title, color: item.color})));
     }
 
     static getCategory(req, res) {
@@ -21,18 +21,19 @@ class CategoryExpenseController {
         }
         res.json({
             id: category.id,
-            title: category.title
+            title: category.title,
+            color: category.color
         });
     }
 
     static createCategory(req, res) {
-        const {title} = req.body;
-        if (!title) {
+        const {title, color} = req.body;
+        if (!title || !color) {
             return res.status(400)
-                .json({error: true, message: "Title parameter should be passed"});
+                .json({error: true, message: "All parameters should be passed"});
         }
 
-        let category = CategoryExpenseModel.findOne({title: title, user_id: req.body.user.id});
+        let category = CategoryExpenseModel.findOne({title: title, color: color, user_id: req.body.user.id});
         if (category) {
             return res.status(400)
                 .json({error: true, message: "This record already exists"});
@@ -46,25 +47,27 @@ class CategoryExpenseController {
         category = {
             id: id,
             title: req.body.title,
+            color: color,
             user_id: req.body.user.id
         };
 
         CategoryExpenseModel.create(category)
         res.json({
             id: category.id,
-            title: category.title
+            title: category.title,
+            color: category.color
         });
     }
 
     static updateCategory(req, res) {
         const {id} = req.params;
-        const {title} = req.body;
-        if (!id || !title) {
+        const {title, color} = req.body;
+        if (!id || !title || !color) {
             return res.status(400)
                 .json({error: true, message: "Title and ID parameters should be passed"});
         }
 
-        res.json(CategoryExpenseModel.update({id: parseInt(id), user_id: req.body.user.id}, title));
+        res.json(CategoryExpenseModel.update({id: parseInt(id), user_id: req.body.user.id}, title, color));
     }
 
     static deleteCategory(req, res) {

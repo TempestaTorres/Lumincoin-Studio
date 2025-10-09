@@ -38,6 +38,7 @@ export class Editor extends Dashboard {
 
         this._editor = document.querySelector(EDITOR_SELECTOR);
         this._picker = null;
+        this._currColor = null;
         this._editorData = {};
         this._editorPreviouseData = {};
         this.skins = [
@@ -94,7 +95,7 @@ export class Editor extends Dashboard {
 
     #requestOperationEditorCallback(response) {
 
-        if (response.id) {
+        if (response !== null && response.id) {
 
             console.log(response);
 
@@ -156,15 +157,18 @@ export class Editor extends Dashboard {
         this.#addEventListeners();
     }
 
+    // Create Category
     #editorCreateCategoryIncomeExpenses() {
 
         this.#editorCommonCategory();
 
     }
 
+    // Edit Category
     #editorEditCategoryIncomeExpenses() {
 
         this.#editorCommonCategory(false);
+
         this.targetId = Url.getLocationParam("id");
 
         this.dashboardRequestHandler(this.options.requestUrl + "/" + this.targetId, this.#requestEditorCallback.bind(this));
@@ -173,8 +177,13 @@ export class Editor extends Dashboard {
 
     #requestEditorCallback(response) {
 
-        if (response.id) {
+        if (response !== null && response.id) {
             this._editorData.title = response.title;
+            this._editorData.color = response.color;
+            $(this._addColorButton).css({
+                'background-color': this._editorData.color,
+                'border-color'    : this._editorData.color
+            });
             this._formControles[0].value = response.title;
             this.#checkControlsValid();
         }
@@ -186,6 +195,7 @@ export class Editor extends Dashboard {
     #editorCommonCategory(bCheckIsValid = true) {
         this._editorData = {
             title: '',
+            color: ''
         };
         if (this.options.state === config.STATE_CREATE_CATEGORY_INCOME || this.options.state === config.STATE_EDIT_CATEGORY_INCOME) {
             this.dashboardTtitle.textContent += " Дохода";
@@ -197,6 +207,9 @@ export class Editor extends Dashboard {
         }
 
         this._addColorButton = document.querySelector(EDITOR_ADD_COLOR_SELECTOR);
+        this._editorData.color = $(this._addColorButton).css('background-color');
+        this._currColor = this._editorData.color;
+
         this._colorChooser = document.querySelector(EDITOR_COLOR_SELECTOR);
 
         for (let i = 0; i < this._colorChooser.children.length; i++) {
@@ -208,6 +221,8 @@ export class Editor extends Dashboard {
         this._addColorButton.addEventListener("click", this.#addColorButton.bind(this));
         this._formControles[0].addEventListener("input", this.#commonInputHandler.bind(this));
         this._editorButtons.children[1].addEventListener("click", this.#buttonSaveHandler.bind(this));
+
+        $('[data-toggle="tooltip"]').tooltip({ boundary: 'window' });
 
         if (bCheckIsValid) {
             this.#checkControlsValid();
@@ -406,6 +421,7 @@ export class Editor extends Dashboard {
 
         if (response !== null && response.id) {
             this.showMessageBox(this._messages[this._currentStateIndex] + ": " + response.date);
+            this.updateBalance();
         }
         else {
             this.showErrorMessageBox(EDITOR_ERROR_MESSAGE);
@@ -423,13 +439,13 @@ export class Editor extends Dashboard {
                     let find = false;
 
                     for (let i = 0; i < response.length; i++) {
-                        if (response[i].title === this._editorData.title) {
+                        if (response[i].title === this._editorData.title && response[i].color === this._editorData.color) {
                             find = true;
                             break;
                         }
                     }
                     if (find) {
-                        this.showErrorMessageBox("The category " + this._editorData.title + " already exists.");
+                        this.showErrorMessageBox("Категория " + this._editorData.title + " уже существует.");
                     }
                     else {
                         this.dashboardPostRequestHandler(url, method, this._editorData, this.#responseHandler.bind(this));
@@ -455,9 +471,10 @@ export class Editor extends Dashboard {
     #clearCategories() {
 
         let ch = this._selectCategory.children();
+        let chNumbers = ch.length;
 
-        for (let i = 1; i < ch.length; i++) {
-            ch[i].remove();
+        for (let i = 1; i < chNumbers; i++) {
+            ch[1].remove();
         }
     }
 
@@ -496,17 +513,16 @@ export class Editor extends Dashboard {
     #pickColorHandler(e) {
         e.preventDefault();
 
-        let currColor = $(e.currentTarget).css('color');
+        this._currColor = $(e.currentTarget).css('color');
 
         $(this._addColorButton).css({
-            'background-color': currColor,
-            'border-color'    : currColor
+            'background-color': this._currColor,
+            'border-color'    : this._currColor
         });
-        this._addColorButton.dataset.index = e.currentTarget.dataset.index;
     }
     #addColorButton(e) {
         e.preventDefault();
 
-        console.log(e.target.dataset.index);
+        this._editorData.color = this._currColor;
     }
 }

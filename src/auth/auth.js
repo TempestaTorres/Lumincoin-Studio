@@ -54,6 +54,21 @@ export class Auth {
         }
         return true;
     }
+
+    static async refreshTokens() {
+
+        const refreshToken = localStorage.getItem(this.refreshTokenKey);
+
+        if (refreshToken) {
+            const response = await HttpRequest.sendRequest(authRoutes.refresh,"POST", {
+                refreshToken: refreshToken,
+            });
+
+            Auth.clearAccessTokens();
+            Auth.setTokens(response.tokens.accessToken, response.tokens.refreshToken);
+        }
+    }
+
     static logoutManager(callback) {
 
         const token = this.getRefreshToken();

@@ -49,7 +49,6 @@ export class Dashboard {
             value: this.accessToken,
         }
         this.data = null;
-        this.colors = ['red', 'orange', 'yellow', 'green', 'blue'];
         this.dashboardCallbacks = [];
         this.skins = [];
         this.currentState = (this.options.state - this.options.defaultState);
@@ -60,30 +59,35 @@ export class Dashboard {
         this.targetId = null;
         this.triggerBtn = null;
 
+        this._chartIncome = null;
+        this._chartExpense = null;
+
         this._incomeCtx = null;
-        this._expensesCtx = null;
+        this._expenseCtx = null;
 
         window.addEventListener("scroll", this.#setScrollObserver.bind(this));
+        new Validator(DASHBOARD_FORM_ID, this.#formDataReceiver.bind(this));
 
         this.#setAdminName();
         this.#setActiveDashboard();
         this.#setContentHeader();
         this.#checkMessage();
 
-        if (Dashboard.balance === null) {
-            this.dashboardRequestHandler(authRoutes.getBalance, this.#setupBalance.bind(this));
-        }
-        else {
-            this.balanceEl.textContent = Dashboard.balance + "$";
-        }
-        new Validator(DASHBOARD_FORM_ID, this.#formDataReceiver.bind(this));
-
+        this.dashboardRequestHandler(authRoutes.getBalance, this.#setupBalance.bind(this));
         Fsm.clear();
         Fsm.registerState(config.STATE_DASHBOARD, this.#dashboardMain.bind(this));
     }
 
     initialize() {
         Fsm.callCurrentState(this.options.state);
+    }
+
+    #setupBalance(balance) {
+
+        if (balance !== null) {
+            Dashboard.balance = balance.balance;
+            this.balanceEl.textContent = balance.balance + "$";
+        }
     }
 
     #setAdminName() {
@@ -139,12 +143,8 @@ export class Dashboard {
         }
     }
 
-    #setupBalance(balance) {
-
-        if (balance !== null) {
-            Dashboard.balance = balance.balance;
-            this.balanceEl.textContent = balance.balance + "$";
-        }
+    updateBalance() {
+        this.dashboardRequestHandler(authRoutes.getBalance, this.#setupBalance.bind(this));
     }
 
     #dashboardMain() {
@@ -153,8 +153,34 @@ export class Dashboard {
         this.initializePicker();
 
         this._incomeCtx = document.getElementById(DASHBOARD_INCOME_SELECTOR).getContext("2d");
-        this._expensesCtx = document.getElementById(DASHBOARD_EXPENSES_SELECTOR).getContext("2d");
-        this.#setupCharts();
+        this._expenseCtx = document.getElementById(DASHBOARD_EXPENSES_SELECTOR).getContext("2d");
+
+        let options = {
+            maintainAspectRatio : false,
+            responsive : true,
+            plugins: {
+                legend: {
+                    display: true
+                }
+            },
+            title: {
+                display: true,
+                text: 'График'
+            }
+        };
+
+        this._chartIncome = new Chart(this._incomeCtx, {
+            type: 'pie',
+            data: {},
+            options: options,
+        });
+        this._chartExpense = new Chart(this._expenseCtx, {
+            type: 'pie',
+            data: {},
+            options: options,
+        });
+
+        this.dashboardRequestHandler(authRoutes.getOperations, this.#setupCharts.bind(this));
     }
 
     createFilter(callback) {
@@ -229,6 +255,11 @@ export class Dashboard {
     pickerHandler(e, picker) {
 
         this.pickerUpdate(picker);
+        this.#removeChartsData();
+
+        let url = authRoutes.getOperations + this.filterOptions[5] + picker.startDate.format('YYYY-MM-DD') + "&dateTo=" + picker.endDate.format('YYYY-MM-DD');
+
+        this.dashboardRequestHandler(url, this.#setupCharts.bind(this));
 
     }
 
@@ -242,8 +273,24 @@ export class Dashboard {
     #dashboardFilterHandler(e) {
 
         if (this.isFilterButtonReady(e.target)) {
-            console.log("FILTER");
+
+            this.#removeChartsData();
+
+            if (this.filterIndex === 0) {
+
+                this.dashboardRequestHandler(authRoutes.getOperations, this.#setupCharts.bind(this));
+            }
+            else {
+                this.dashboardRequestHandler(authRoutes.getOperations + this.filterOptions[this.filterIndex], this.#setupCharts.bind(this));
+            }
         }
+    }
+
+    #removeChartsData() {
+        this._chartIncome.data.datasets.pop();
+        this._chartExpense.data.datasets.pop();
+        this._chartIncome.update();
+        this._chartExpense.update();
     }
 
     isFilterButtonReady(button) {
@@ -292,62 +339,100 @@ export class Dashboard {
         }
     }
 
-    #setupCharts() {
+    #setupCharts(response) {
 
-        let chartData1        = {
-            labels: [
-                'Red',
-                'Orange',
-                'Yellow',
-                'Green',
-                'Blue',
-            ],
-            datasets: [
-                {
-                    data: [700,500,400,600,300],
-                    backgroundColor : this.colors,
-                }
-            ]
+        if (response !== null && Array.isArray(response) && response.length > 0) {
+
+            this.data = response;
+            this.dashboardRequestHandler(authRoutes.getIncomeCategories, this.#setupIncomeChart.bind(this));
+            this.dashboardRequestHandler(authRoutes.getExpenseCategories, this.#setupExpenseChart.bind(this));
         }
-        let chartData2        = {
-            labels: [
-                'Red',
-                'Orange',
-                'Yellow',
-                'Green',
-                'Blue',
-            ],
-            datasets: [
-                {
-                    data: [200,500,300,100,600],
-                    backgroundColor : this.colors,
-                }
-            ]
-        }
-        let chartOptions     = {
-            maintainAspectRatio : false,
-            responsive : true,
-            plugins: {
-                legend: {
-                    display: true
-                }
-            }
-        }
-
-        new Chart(this._incomeCtx, {
-            type: 'pie',
-            data: chartData1,
-            options: chartOptions
-        });
-        new Chart(this._expensesCtx, {
-            type: 'pie',
-            data: chartData2,
-            options: chartOptions
-        });
-
-
     }
 
+    #setupIncomeChart(response) {
+
+        if (response !== null && Array.isArray(response) && response.length > 0) {
+
+            let incomeChartData = {
+                labels: [],
+                datasets: [
+                    {
+                        data: [],
+                        backgroundColor : [],
+                    }
+                ]
+            }
+            for (let i = 0; i < response.length; i++) {
+
+                incomeChartData.labels.push(response[i].title);
+                incomeChartData.datasets[0].backgroundColor.push(response[i].color);
+                incomeChartData.datasets[0].data.push(0);
+            }
+
+            for (let i = 0; i < this.data.length; i++) {
+
+                if(this.data[i].type === 'income') {
+
+                    let index = this.#getIndexOfCategory(incomeChartData.labels, this.data[i].category);
+                    if (index !== -1) {
+                        incomeChartData.datasets[0].data[index] += this.data[i].amount;
+                    }
+                }
+            }
+
+            this._chartIncome.data = incomeChartData;
+            this._chartIncome.options.title.text += " Доходов";
+            this._chartIncome.update();
+        }
+    }
+
+    #setupExpenseChart(response) {
+
+        if (response !== null && Array.isArray(response) && response.length > 0) {
+
+            let expenseChartData = {
+                labels: [],
+                datasets: [
+                    {
+                        data: [],
+                        backgroundColor : [],
+                    }
+                ]
+            }
+
+            for (let i = 0; i < response.length; i++) {
+
+                expenseChartData.labels.push(response[i].title);
+                expenseChartData.datasets[0].backgroundColor.push(response[i].color);
+                expenseChartData.datasets[0].data.push(0);
+            }
+
+            for (let i = 0; i < this.data.length; i++) {
+
+                if(this.data[i].type === 'expense') {
+
+                    let index = this.#getIndexOfCategory(expenseChartData.labels, this.data[i].category);
+                    if (index !== -1) {
+                        expenseChartData.datasets[0].data[index] += this.data[i].amount;
+                    }
+                }
+            }
+
+            this._chartExpense.data = expenseChartData;
+            this._chartExpense.options.title.text += " Расходов";
+            this._chartExpense.update();
+        }
+    }
+
+    #getIndexOfCategory(categories, categoryName) {
+
+        for (let i = 0; i < categories.length; i++) {
+            if (categories[i] === categoryName) {
+                return i;
+            }
+        }
+        return -1;
+    }
     dashboardRequestHandler(url, callback) {
         this.sendRequest(url).then((response) => callback(response));
     }

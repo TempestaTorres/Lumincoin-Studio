@@ -131,6 +131,7 @@ export class Category extends Dashboard {
 
         let i = document.createElement("i");
         i.classList.add("ion", "ion-stats-bars");
+        i.style.color = category.color;
 
         icon.appendChild(i);
         smallBox.appendChild(icon);

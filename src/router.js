@@ -567,6 +567,8 @@ export class Router {
 
     async #routeManager(route, message = "") {
 
+        await Auth.refreshTokens();
+
         this._pageTitleId.textContent = route.name;
         let pageWrapper = this._pageWrapper;
 

@@ -23,7 +23,6 @@ const DASHBOARD_BACK_TO_TOP = ".back-top";
 const DASHBOARD_THEME_SWITCH_SELECTOR = "#dashboard-theme-checkbox";
 
 export class Dashboard {
-    static balance = null;
 
     constructor(dashboardName = config.DASHBOARD_HOME, options = {}) {
 
@@ -135,7 +134,6 @@ export class Dashboard {
     #setupBalance(balance) {
 
         if (balance !== null) {
-            Dashboard.balance = balance.balance;
             this.balanceEl.textContent = balance.balance + "$";
         }
     }

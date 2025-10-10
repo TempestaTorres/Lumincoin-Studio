@@ -431,7 +431,7 @@ export class Dashboard {
             }
 
             this._chartIncome.data = incomeChartData;
-            this._chartIncome.options.title.text += " Доходов";
+            this._chartIncome.options.title.text = "График Доходов";
             this._chartIncome.update();
         }
     }
@@ -469,7 +469,7 @@ export class Dashboard {
             }
 
             this._chartExpense.data = expenseChartData;
-            this._chartExpense.options.title.text += " Расходов";
+            this._chartExpense.options.title.text = "График Расходов";
             this._chartExpense.update();
         }
     }

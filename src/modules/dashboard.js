@@ -6,6 +6,10 @@ import authRoutes from "../auth/authRoutes.js";
 import {Validator} from "../utils/validator.js";
 import {Fsm} from "./fsm.js";
 
+const DASHBOARD_THEME_NAME = "lumincoin-studio-theme";
+const DASHBOARD_SIDEBAR = ".main-sidebar";
+const DASHBOARD_NAVBAR = ".main-header.navbar";
+const DASHBOARD_FOOTER = ".main-footer";
 const DASHBOARD_MESSAGE_TITLE = 'MJ Lumincoin Studio';
 const DASHBOARD_USER_NAME_SELECTOR = ".dashboard-user-name";
 const DASHBOARD_NAV_LINK_SELECTOR = "a[data-node-type='dashboard-link']";
@@ -16,6 +20,7 @@ const DASHBOARD_INCOME_SELECTOR = "incomeChart";
 const DASHBOARD_EXPENSES_SELECTOR = "expensesChart";
 const DASHBOARD_FILTER_SELECTOR = ".main-filter";
 const DASHBOARD_BACK_TO_TOP = ".back-top";
+const DASHBOARD_THEME_SWITCH_SELECTOR = "#dashboard-theme-checkbox";
 
 export class Dashboard {
     static balance = null;
@@ -58,6 +63,32 @@ export class Dashboard {
         this._isDatePickerShowing = false;
         this.targetId = null;
         this.triggerBtn = null;
+        this._themeSwitch = $(DASHBOARD_THEME_SWITCH_SELECTOR);
+        this._sideBar = document.querySelector(DASHBOARD_SIDEBAR);
+        this._navBar = document.querySelector(DASHBOARD_NAVBAR);
+        this._footer = document.querySelector(DASHBOARD_FOOTER);
+        this._sideBarStates = [
+                "sidebar-light-primary",
+                "sidebar-dark-primary",
+        ];
+        this._navBarStates = [
+                "navbar-white",
+                "navbar-gray-dark",
+        ];
+        let index = localStorage.getItem(DASHBOARD_THEME_NAME);
+        if (index) {
+            this._sideBarIndex = parseInt(index, 10);
+        }
+        else {
+            this._sideBarIndex = 0;
+        }
+
+        this._sideBar.classList.add(this._sideBarStates[this._sideBarIndex]);
+        this._navBar.classList.add(this._navBarStates[this._sideBarIndex]);
+
+        if (this._sideBarIndex !== 0) {
+            this._footer.classList.add("footer-dark");
+        }
 
         this._chartIncome = null;
         this._chartExpense = null;
@@ -74,12 +105,31 @@ export class Dashboard {
         this.#checkMessage();
 
         this.dashboardRequestHandler(authRoutes.getBalance, this.#setupBalance.bind(this));
+        this._themeSwitch.bootstrapSwitch('onSwitchChange', this.#switch.bind(this));
+
         Fsm.clear();
         Fsm.registerState(config.STATE_DASHBOARD, this.#dashboardMain.bind(this));
     }
 
     initialize() {
+
         Fsm.callCurrentState(this.options.state);
+    }
+
+    #switch() {
+
+        this._sideBar.classList.remove(this._sideBarStates[this._sideBarIndex]);
+        this._navBar.classList.remove(this._navBarStates[this._sideBarIndex]);
+        this._sideBarIndex ^= 1;
+        this._sideBar.classList.add(this._sideBarStates[this._sideBarIndex]);
+        this._navBar.classList.add(this._navBarStates[this._sideBarIndex]);
+
+        this._footer.classList.toggle("footer-dark");
+
+        localStorage.removeItem(DASHBOARD_THEME_NAME);
+        localStorage.setItem(DASHBOARD_THEME_NAME, `${this._sideBarIndex}`);
+
+        return true;
     }
 
     #setupBalance(balance) {

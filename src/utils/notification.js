@@ -8,7 +8,7 @@ export class Notify {
             text: message,
             icon: iconClass,
             hideAfter: 5000,
-            position: 'top-right',
+            position: 'bottom-right',
             class: bgClass,
             showHideTransition: 'slide',
             afterHidden: function() {

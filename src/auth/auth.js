@@ -89,6 +89,8 @@ export class Auth {
                     this.userInfo.email = "";
                     this.userInfo.userId = 0;
 
+                    localStorage.removeItem("lumincoin-studio-theme");
+
                     history.pushState(null, null, config.ROUTE_LOGIN);
                     callback();
                 }

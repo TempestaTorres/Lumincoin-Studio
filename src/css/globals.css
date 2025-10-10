@@ -95,6 +95,19 @@ label:not(.form-check-label):not(.custom-file-label) {
 [class*="sidebar-light-"] .nav-sidebar > .nav-item:hover > .nav-link .balance-title .balance-info {
     color: #fff;
 }
+[class*="sidebar-dark"] .user-panel.bottom .image.admin-user-img i {
+    color: #fff;
+}
+[class*="sidebar-dark"] .user-panel.bottom .info .btn {
+    color: #fff;
+}
+.dropdown-item:focus, [class*="sidebar-dark-"] .user-panel .dropdown-item:hover {
+    background-color: rgba(0, 0, 0, 0.4);
+    color: #fff;
+}
+.navbar-gray-dark .navbar-nav .nav-link {
+    color: rgba(255,255,255,.75);
+}
 
 .sidebar-mini .main-sidebar .nav-link, .sidebar-mini-md .main-sidebar .nav-link, .sidebar-mini-xs .main-sidebar .nav-link {
     width: calc(220px - .5rem);
@@ -132,6 +145,10 @@ label:not(.form-check-label):not(.custom-file-label) {
 .dropdown-item:focus, [class*="sidebar-light-"] .user-panel .dropdown-item:hover {
     background-color:#0d6efd;
     color: #fff;
+}
+.footer-dark {
+    background-color: #343a40;
+    color: #fff7f8;
 }
 .brand-link {
     display: flex;
